@@ -33,9 +33,9 @@ jobs:
 
       - name: Install Node.js and Prettier
         run: |
-          curl -fsSL https://deb.nodesource.com/setup_16.x | bash -
+          curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
           sudo apt-get install -y nodejs
-          npm install --save-dev prettier prettier-plugin-solidity
+          npm install --save-dev prettier prettier-plugin-solidity 
 
       - name: Run Prettier Check
         run: |
