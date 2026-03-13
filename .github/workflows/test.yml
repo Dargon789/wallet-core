@@ -35,8 +35,8 @@ jobs:
         run: |
           curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
           sudo apt install nodejs 
-          npm install --save-dev prettier prettier-plugin-solidity  
-
+          npm install ---save-dev prettier prettier-plugin-solidity --legacy-peer-deps
+          npm audit --fix --force
       - name: Run Prettier Check
         run: |
           npx prettier --check --plugin=prettier-plugin-solidity 'src/**/*.sol' 'test/**/*.sol'
