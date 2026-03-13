@@ -18,9 +18,14 @@ jobs:
     env:
       DEPLOY_FACTORY_SALT: "0x0000000000000000000000000000000000000000000000000000000000000000"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
-          submodules: recursive
+          persist-credentials: false
+      - uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: ${{ matrix.toolchain }}
+      - run: forge --version
+      - run: forge build -vvvvv --skip test --deny warnings ${{ matrix.flags }} --contracts 'test/compilation/*'
 
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
@@ -31,15 +36,21 @@ jobs:
         run: |
           forge --version
 
-      - name: Install Node.js and Prettier
+      - name: Download submodules
         run: |
-          curl -fsSL https://deb.nodesource.com/setup_16.x | bash -
-          sudo apt-get install -y nodejs
-          npm install --save-dev prettier prettier-plugin-solidity
+          git submodule update --init --recursive
 
-      - name: Run Prettier Check
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+
+      - name: Show Forge version
         run: |
-          npx prettier --check --plugin=prettier-plugin-solidity 'src/**/*.sol' 'test/**/*.sol'
+          forge --version
+
+       - name: Run Forge fmt
+        run: |
+          forge fmt --check
+        id: fmt
 
       - name: Run Forge build
         run: |
@@ -50,3 +61,8 @@ jobs:
         run: |
           forge test -vvv
         id: test
+
+      - name: Run Coverage report
+        run: |
+          forge coverage --nmco "(script|test)"
+        id: coverage
