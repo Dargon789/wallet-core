@@ -1,17 +1,33 @@
-name: CI
-
+name: Tests
+ 
 on:
   push:
+    branches: [main]
   pull_request:
-  workflow_dispatch:
-
 permissions:
   contents: read
-
-env:
-  FOUNDRY_PROFILE: ci
-
+  
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+ 
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          cache: true
+ 
+      - name: Build
+        run: forge build
+ 
+      - name: Run tests
+        run: forge test -vvv
+    env:
+      FOUNDRY_PROFILE: ci
+     
   check:
     strategy:
       fail-fast: true
@@ -50,7 +66,7 @@ jobs:
         run: |
           forge --version
 
-       - name: Run Forge fmt
+      - name: Run Forge fmt
         run: |
           forge fmt --check
         id: fmt
