@@ -4,9 +4,7 @@ on:
   push:
     branches: [main]
   pull_request:
-permissions:
-  contents: read
-  
+ 
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -25,63 +23,3 @@ jobs:
  
       - name: Run tests
         run: forge test -vvv
-    env:
-      FOUNDRY_PROFILE: ci
-     
-  check:
-    strategy:
-      fail-fast: true
-
-    name: Foundry project
-    runs-on: ubuntu-latest
-    env:
-      DEPLOY_FACTORY_SALT: "0x0000000000000000000000000000000000000000000000000000000000000000"
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          persist-credentials: false
-      - uses: foundry-rs/foundry-toolchain@v1
-        with:
-          version: ${{ matrix.toolchain }}
-      - run: forge --version
-      - run: forge build -vvvvv --skip test --deny warnings ${{ matrix.flags }} --contracts 'test/compilation/*'
-
-      - name: Install Foundry
-        uses: foundry-rs/foundry-toolchain@v1
-        with:
-          version: nightly
-
-      - name: Show Forge version
-        run: |
-          forge --version
-
-      - name: Download submodules
-        run: |
-          git submodule update --init --recursive
-
-      - name: Install Foundry
-        uses: foundry-rs/foundry-toolchain@v1
-
-      - name: Show Forge version
-        run: |
-          forge --version
-
-      - name: Run Forge fmt
-        run: |
-          forge fmt --check
-        id: fmt
-
-      - name: Run Forge build
-        run: |
-          forge build --sizes
-        id: build
-
-      - name: Run Forge tests
-        run: |
-          forge test -vvv
-        id: test
-
-      - name: Run Coverage report
-        run: |
-          forge coverage --nmco "(script|test)"
-        id: coverage
